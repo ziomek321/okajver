@@ -1,0 +1,58 @@
+plugins {
+    id 'fabric-loom' version '1.13.6'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/okyware.accesswidener")
+}
+
+repositories {
+    maven { url = "https://maven.meteordev.org/snapshots" }
+    maven { url = "https://maven.meteordev.org/releases" }
+    maven { url = 'https://jitpack.io' }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.21.4"
+    mappings "net.fabricmc:yarn:1.21.4+build.8:v2"
+    modImplementation "net.fabricmc:fabric-loader:0.16.14"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.119.3+1.21.4"
+    compileOnly "org.projectlombok:lombok:1.18.38"
+    annotationProcessor "org.projectlombok:lombok:1.18.38"
+    modCompileOnly "meteordevelopment:baritone:1.21.4-SNAPSHOT"
+    include modImplementation("ai.djl:api:0.32.0")
+    include modImplementation("ai.djl.pytorch:pytorch-engine:0.32.0")
+}
+
+processResources {
+    inputs.property "version", project.version
+    filteringCharset "UTF-8"
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": "1.21.4",
+                "loader_version": "0.16.14"
+    }
+}
+
+def targetJavaVersion = 21
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    it.options.release.set(targetJavaVersion)
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    withSourcesJar()
+}
