@@ -1,4 +1,4 @@
-# okajver
+# okajver / okajłer / okyware 
 chce byc pierwszym co dal na githuba okajłera essa
 credits:
 fnaffox8 (leak)
